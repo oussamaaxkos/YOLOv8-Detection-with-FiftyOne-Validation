@@ -184,6 +184,8 @@ For issues or questions, please open a GitHub issue.
 
 This repo now includes a simple, professional web interface that lets you:
 
+![Web UI Screenshot](image.png)
+
 - upload an image
 - run detection
 - see a preview with bounding boxes
