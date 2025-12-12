@@ -3,7 +3,7 @@ from flask_cors import CORS
 import os
 import torch
 from ultralytics import YOLO
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 import io
 import numpy as np
 
@@ -36,6 +36,9 @@ def preprocess_image(image_file):
             image = image.convert('RGB')
 
         return image
+    except UnidentifiedImageError:
+        # Common case: non-image file or corrupted upload
+        raise ValueError('Invalid image file')
     except Exception as e:
         print(f"Error preprocessing image: {e}")
         raise
@@ -104,6 +107,12 @@ def predict_endpoint():
             'message': 'Prediction completed successfully'
         })
 
+    except ValueError as e:
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'message': 'Bad request'
+        }), 400
     except Exception as e:
         return jsonify({
             'success': False,

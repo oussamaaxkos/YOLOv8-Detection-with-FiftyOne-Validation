@@ -72,9 +72,13 @@ app.post('/api/predict', upload.single('file'), async (req, res) => {
     const payload = err?.response?.data;
     const message = err?.message || 'Upstream error';
 
+    let errorText = message;
+    if (typeof payload === 'string') errorText = payload;
+    else if (payload && typeof payload === 'object') errorText = payload.error || payload.message || JSON.stringify(payload);
+
     return res.status(status).json({
       success: false,
-      error: payload || message,
+      error: errorText,
       message: 'Prediction failed'
     });
   }

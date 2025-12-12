@@ -54,6 +54,15 @@ export default function App() {
     const f = e.target.files?.[0] || null;
     if (!f) return;
 
+    if (typeof f.type === 'string' && !f.type.startsWith('image/')) {
+      setError('Please select a valid image file (png/jpg).');
+      setPredictions([]);
+      setFile(null);
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
+      return;
+    }
+
     setError(null);
     setPredictions([]);
     setFile(f);
@@ -79,7 +88,13 @@ export default function App() {
 
       const data = await res.json();
       if (!res.ok || !data?.success) {
-        throw new Error(typeof data?.error === 'string' ? data.error : 'Prediction failed');
+        const errText =
+          typeof data?.error === 'string'
+            ? data.error
+            : data?.error
+              ? JSON.stringify(data.error)
+              : 'Prediction failed';
+        throw new Error(errText);
       }
 
       setPredictions(Array.isArray(data.predictions) ? data.predictions : []);
