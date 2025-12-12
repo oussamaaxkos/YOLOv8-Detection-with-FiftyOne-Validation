@@ -3,3 +3,12 @@
 
 # Ignore large files
 *.pt
+
+# Ignore Python cache and virtual environment
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+venv/
+.venv/
