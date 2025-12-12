@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Box, Typography } from '@mui/material';
+import { getClassLabel } from '../lib/classNames.js';
 
 function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
@@ -72,7 +73,9 @@ export default function ImageWithBoxes({ imageUrl, predictions }) {
       const bh = Math.max(1, ry2 - ry1);
       ctx.strokeRect(rx1, ry1, bw, bh);
 
-      const label = `cls ${p?.class ?? '-'} ${(typeof p?.confidence === 'number' ? (p.confidence * 100).toFixed(0) + '%' : '')}`;
+      const label = `${getClassLabel(p?.class)}${p?.class === undefined || p?.class === null ? '' : ` (${p.class})`} ${
+        typeof p?.confidence === 'number' ? (p.confidence * 100).toFixed(0) + '%' : ''
+      }`;
       const pad = 4;
       const textW = ctx.measureText(label).width;
       const textH = 14;

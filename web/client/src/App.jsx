@@ -19,6 +19,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import ImageWithBoxes from './components/ImageWithBoxes.jsx';
 import PredictionTable from './components/PredictionTable.jsx';
+import { getClassLabel } from './lib/classNames.js';
 
 function formatPct(x) {
   if (typeof x !== 'number') return '-';
@@ -188,7 +189,7 @@ export default function App() {
                     <Chip label={`${summary.count} detections`} />
                     <Chip
                       variant="outlined"
-                      label={`Top: class ${summary.top?.class ?? '-'} • ${formatPct(summary.top?.confidence)}`}
+                      label={`Top: ${getClassLabel(summary.top?.class)} • ${formatPct(summary.top?.confidence)}`}
                     />
                   </Stack>
                 </Box>
@@ -217,7 +218,7 @@ export default function App() {
                   Results
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  Class IDs come from the trained model.
+                  Class labels are mapped from your model metadata.
                 </Typography>
 
                 <PredictionTable predictions={predictions} />

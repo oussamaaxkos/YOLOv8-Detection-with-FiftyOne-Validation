@@ -9,6 +9,7 @@ import {
   TableRow,
   Typography
 } from '@mui/material';
+import { getClassLabel } from '../lib/classNames.js';
 
 function fmt(x) {
   if (typeof x !== 'number') return '-';
@@ -41,7 +42,9 @@ export default function PredictionTable({ predictions }) {
         <TableBody>
           {rows.map((p, idx) => (
             <TableRow key={idx} hover>
-              <TableCell>{p?.class ?? '-'}</TableCell>
+              <TableCell>
+                {p?.class === undefined || p?.class === null ? '-' : `${getClassLabel(p.class)} (${p.class})`}
+              </TableCell>
               <TableCell>{typeof p?.confidence === 'number' ? (p.confidence * 100).toFixed(1) + '%' : '-'}</TableCell>
               <TableCell>
                 {Array.isArray(p?.bbox) ? p.bbox.map(fmt).join(', ') : '-'}
@@ -53,4 +56,3 @@ export default function PredictionTable({ predictions }) {
     </TableContainer>
   );
 }
-
