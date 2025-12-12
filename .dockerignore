@@ -1,0 +1,18 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+venv/
+.venv/
+.git/
+.gitignore
+*.pt
+*.ipynb
+
+# Node/React
+node_modules/
+web/**/node_modules/
+web/**/dist/
+.vite/
+

@@ -1,0 +1,28 @@
+services:
+  yolov8-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    # Mount the model file from the host (recommended since it's usually large / not committed)
+    volumes:
+      - ./yolov8_trained_model.pt:/app/yolov8_trained_model.pt:ro
+    environment:
+      # Avoid Flask reloader spawning extra process in container logs
+      - FLASK_ENV=production
+    restart: unless-stopped
+
+  yolov8-ui:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - YOLO_API_URL=http://yolov8-api:5000
+      - PORT=3001
+    depends_on:
+      - yolov8-api
+    restart: unless-stopped
+

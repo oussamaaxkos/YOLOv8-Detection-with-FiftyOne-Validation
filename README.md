@@ -54,6 +54,40 @@ python app.py
 
 The API will be available at `http://localhost:5000`
 
+## Run with Docker (recommended)
+
+This repo includes a [`Dockerfile`](Dockerfile:1) and [`docker-compose.yml`](docker-compose.yml:1).
+
+### Prerequisites
+
+- Docker Desktop installed and running
+- A trained model file available on your host at `./yolov8_trained_model.pt` (it is usually not committed because it can be large)
+
+### Option A: Docker Compose
+
+From the project root:
+
+```bash
+docker compose up --build
+```
+
+This will:
+
+- build the image
+- publish the API on `http://localhost:5000`
+- mount `./yolov8_trained_model.pt` into the container at `/app/yolov8_trained_model.pt`
+
+### Option B: Docker build + run
+
+```bash
+docker build -t yolov8-api .
+docker run --rm -p 5000:5000 \
+  -v "%cd%\yolov8_trained_model.pt:/app/yolov8_trained_model.pt:ro" \
+  yolov8-api
+```
+
+If the container fails at startup with a model loading error, confirm the model file exists on the host and is named exactly `yolov8_trained_model.pt`.
+
 ## API Endpoints
 
 ### GET `/`
@@ -143,3 +177,82 @@ Contributions are welcome! Please open an issue or submit a pull request.
 ## Support
 
 For issues or questions, please open a GitHub issue.
+
+---
+
+## Web UI (Node.js + React)
+
+This repo now includes a simple, professional web interface that lets you:
+
+- upload an image
+- run detection
+- see a preview with bounding boxes
+- review predictions in a table
+
+### Architecture
+
+- React (Vite) UI
+- Node.js (Express) server that:
+  - proxies requests to the Flask API (`/api/predict` → `http://localhost:5000/predict`)
+  - can serve the built React app in production
+
+### Run (development)
+
+1) Start the YOLO API (Flask / Docker):
+
+```bash
+docker compose up --build
+```
+
+2) Start the Node server (API gateway):
+
+```bash
+cd web/server
+npm install
+npm run dev
+```
+
+3) Start the React UI:
+
+```bash
+cd web/client
+npm install
+npm run dev
+```
+
+Open the UI at `http://localhost:5173`.
+
+> Note (Windows): if you don't have Node.js installed locally, use the Docker option below.
+
+### Run (production-like)
+
+Build the React app, then serve it from the Node server:
+
+```bash
+cd web/client
+npm install
+npm run build
+
+cd ../server
+npm install
+npm start
+```
+
+Open `http://localhost:3001`.
+
+### Run with Docker Compose (no local Node.js needed)
+
+The default [`docker-compose.yml`](docker-compose.yml:1) now includes a `yolov8-ui` service.
+
+```bash
+docker compose up --build
+```
+
+Open `http://localhost:3001`.
+
+### Configuration
+
+The Node server reads environment variables (see [`web/server/.env.example`](web/server/.env.example:1)):
+
+- `PORT` (default: `3001`)
+- `YOLO_API_URL` (default: `http://localhost:5000`)
